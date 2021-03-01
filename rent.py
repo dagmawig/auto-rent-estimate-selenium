@@ -32,7 +32,7 @@ addresses = sheet.col_values(0)
 # calculating the number of addresses
 count = len(addresses)
 
-
+print(addresses)
 
 
 
@@ -63,19 +63,31 @@ agree = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_disclosur
 agree.send_keys(Keys.RETURN)
 
 
-address = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_AutocompleteAddress")
-beds = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_BedroomCount")
+# address = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_AutocompleteAddress")
+# beds = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_BedroomCount")
 
 
-address.send_keys("5574 Waterman Blvd, Saint Louis, MO 63112")
+for strAddress in addresses:
+    for bed in range(4):
+        address = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_AutocompleteAddress")
+        beds = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_BedroomCount")
+        address.clear()
+        beds.clear()
+        address.send_keys(strAddress)
+        beds.send_keys(bed+1)
+        beds.send_keys(Keys.RETURN)    
+        image = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_compareRentChart")
+        image.screenshot(strAddress.replace(" ", "").replace(",", "")+"-"+str(bed+1)+".png")
+    
 
-beds.send_keys("4")
-beds.send_keys(Keys.RETURN)
+# address.send_keys("5574 Waterman Blvd, Saint Louis, MO 63112")
 
-image = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_compareRentChart")
+# beds.send_keys("4")
+# beds.send_keys(Keys.RETURN)
 
+# image = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_compareRentChart")
 
-image.screenshot("myimage.png")
+# image.screenshot("myimage.png")
 
 
 
