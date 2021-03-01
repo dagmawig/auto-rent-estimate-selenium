@@ -77,7 +77,7 @@ for strAddress in addresses:
         beds.send_keys(bed+1)
         beds.send_keys(Keys.RETURN)    
         image = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_compareRentChart")
-        image.screenshot(strAddress.replace(" ", "").replace(",", "")+"-"+str(bed+1)+".png")
+        image.screenshot("./charts/"+strAddress.replace(" ", "").replace(",", "")+"-"+str(bed+1)+".png")
     
 
 # address.send_keys("5574 Waterman Blvd, Saint Louis, MO 63112")
