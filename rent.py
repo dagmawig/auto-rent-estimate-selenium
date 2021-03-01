@@ -1,7 +1,9 @@
 import sys, os
+import processImg
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import user
 from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 import time
 import pytesseract
@@ -39,13 +41,10 @@ count = len(addresses)
 
 PATH = "C:\Program Files (x86)\chromedriver.exe"
 
-#driver = webdriver.Chrome(PATH)
 options = webdriver.ChromeOptions()
 options.add_argument("--start-maximized")
 options.add_argument(f"--force-device-scale-factor={1.5}")
-driver = webdriver.Chrome(PATH, chrome_options=options)
-#driver.execute_script("document.body.style.zoom='250%'")
-
+driver = webdriver.Chrome(PATH, options=options)
 driver.get("https://www.gosection8.com/logreg.aspx?user=landlord")
 
 
@@ -68,29 +67,34 @@ address = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_Autocom
 beds = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_BedroomCount")
 
 
-address.send_keys("8100 West Florissant Ave, Saint Louis, MO 63136")
+address.send_keys("5574 Waterman Blvd, Saint Louis, MO 63112")
 
 beds.send_keys("4")
 beds.send_keys(Keys.RETURN)
 
 image = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_compareRentChart")
 
+
 image.screenshot("myimage.png")
 
 
-oimage = cv2.imread('myimage.png')
-
-# cimage = cv2.resize(oimage, (480,408), interpolation = cv2.INTER_AREA)
-
-county = oimage[50:290, 120:180]
-gray=cv2.cvtColor(county, cv2.COLOR_BGR2GRAY)
-
-
-filename = "county.png".format(os.getpid())
-cv2.imwrite(filename, gray) 
-text = pytesseract.image_to_string(Image.open(filename))
-print(text+"dag")
 
 
 
-#print(len(text.partition('\n')[0]))
+# county = cv2.imread('myimage.png')
+# gray= processImg.get_grayscale(county)
+# thresh = processImg.thresholding(gray)
+# filename = "processed.jpg".format(os.getpid())
+# cv2.imwrite(filename, thresh) 
+# targetImg = Image.open(filename)
+# targetImg.save('withdpi.jpg', dpi=(300,300))
+
+
+
+# finalImage = cv2.imread('withdpi.jpg')
+
+
+# text = pytesseract.image_to_string(finalImage, config='--psm 6')
+# print(text+"dag")
+
+
