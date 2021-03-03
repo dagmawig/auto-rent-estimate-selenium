@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, time
 import processImg
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import user
@@ -8,7 +8,7 @@ from selenium.webdriver.common.keys import Keys
 import time
 import pytesseract
 import cv2, xlrd 
-from PIL import Image
+from PIL import Image, ImageOps
 from array import array
 import urllib.request as getImage
 
@@ -43,8 +43,11 @@ PATH = "C:\Program Files (x86)\chromedriver.exe"
 
 options = webdriver.ChromeOptions()
 options.add_argument("--start-maximized")
-options.add_argument(f"--force-device-scale-factor={1.5}")
+options.add_argument(f"--force-device-scale-factor={1.1}")
 driver = webdriver.Chrome(PATH, options=options)
+
+
+
 driver.get("https://www.gosection8.com/logreg.aspx?user=landlord")
 
 
@@ -62,10 +65,11 @@ agree = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_disclosur
 
 agree.send_keys(Keys.RETURN)
 
-
-# address = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_AutocompleteAddress")
-# beds = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_BedroomCount")
-
+size = (450, 360)
+size1 = (85,55,185,300)
+size2 = (185,55,255,300)
+size3 = (255,55,330,300)
+size4 = (330,55,430,300)
 
 for strAddress in addresses:
     for bed in range(4):
@@ -75,20 +79,31 @@ for strAddress in addresses:
         beds.clear()
         address.send_keys(strAddress)
         beds.send_keys(bed+1)
-        beds.send_keys(Keys.RETURN)    
+        beds.send_keys(Keys.RETURN)  
         image = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_compareRentChart")
         image.screenshot("./charts/"+strAddress.replace(" ", "").replace(",", "")+"-"+str(bed+1)+".png")
-    
+        openImg = Image.open("./charts/"+strAddress.replace(" ", "").replace(",", "")+"-"+str(bed+1)+".png")
+        resizeImg = ImageOps.fit(openImg, size, Image.ANTIALIAS)
+        cropImg1 = resizeImg.crop(size1)
+        cropImg2 = resizeImg.crop(size2)
+        cropImg3 = resizeImg.crop(size3)
+        cropImg4 = resizeImg.crop(size4)
+        cropImg1.save("./charts/"+strAddress.replace(" ", "").replace(",", "")+"-"+str(bed+1)+"-1"+".png")
+        cropImg2.save("./charts/"+strAddress.replace(" ", "").replace(",", "")+"-"+str(bed+1)+"-2"+".png")
+        cropImg3.save("./charts/"+strAddress.replace(" ", "").replace(",", "")+"-"+str(bed+1)+"-3"+".png")
+        cropImg4.save("./charts/"+strAddress.replace(" ", "").replace(",", "")+"-"+str(bed+1)+"-4"+".png")
 
-# address.send_keys("5574 Waterman Blvd, Saint Louis, MO 63112")
 
-# beds.send_keys("4")
-# beds.send_keys(Keys.RETURN)
 
-# image = driver.find_element_by_id("MainContentPlaceHolder_MainContent2_compareRentChart")
 
-# image.screenshot("myimage.png")
-
+# driver.get("https://brandfolder.com/workbench/extract-text-from-image")
+# time.sleep(5)
+# upload = driver.find_element_by_class_name("fsp-drop-pane__input")
+# upload.send_keys(os.getcwd() + "/a.png")
+# time.sleep(5)
+# textEl = driver.find_element_by_id("extracted_text")
+# text = textEl.text
+# print(text)
 
 
 
