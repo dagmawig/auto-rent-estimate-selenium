@@ -22,19 +22,18 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 
 
 # open an excel file
-raw = xlrd.open_workbook('addresses.xlsx')
+raw = xlrd.open_workbook('addresses1.xlsx')
 
 # pulling the first sheet of the file
 sheet = raw.sheet_by_index(0)
 
-# defining addresses array
-addresses = sheet.col_values(0)
 # calculating the number of addresses
-count = len(addresses)
+count = len(sheet.col_values(0))-1
 
-print(addresses)
+addresses = []
 
-
+for i in range(count):
+    addresses.append( str(int(sheet.cell(i+1, 0).value)) + " " + str(sheet.cell(i+1, 1).value) + " " + str(sheet.cell(i+1, 2).value) + "," + " " + str(sheet.cell(i+1, 3).value) + "," + " " + str(sheet.cell(i+1, 4).value) + " " + str(int(sheet.cell(i+1, 5).value)) )
 
 # selenium
 
@@ -44,6 +43,8 @@ PATH = "C:\Program Files (x86)\chromedriver.exe"
 options = webdriver.ChromeOptions()
 options.add_argument("--start-maximized")
 options.add_argument(f"--force-device-scale-factor={1.1}")
+
+
 driver = webdriver.Chrome(PATH, options=options)
 
 
@@ -71,7 +72,6 @@ size2 = (185,55,255,300)
 size3 = (255,55,330,300)
 size4 = (330,55,430,300)
 imageList = []
-
 
 for strAddress in addresses:
     for bed in range(4):
@@ -106,20 +106,48 @@ for strAddress in addresses:
 
 
 
-driver.get("https://brandfolder.com/workbench/extract-text-from-image")
+# driver.get("https://brandfolder.com/workbench/extract-text-from-image")
+driverOCR = []
+
+for i in range(16):
+    driverOCR.append(webdriver.Chrome(PATH, options=options))
+
+for driverSingle in driverOCR:
+    driverSingle.get("https://brandfolder.com/workbench/extract-text-from-image")
 
 
+print(driverOCR)
 
-for imgItem in imageList:
+rentEst = []
+
+for j in range(count):
     time.sleep(5)
-    upload = driver.find_element_by_class_name("fsp-drop-pane__input")
-    upload.clear()
-    upload.send_keys(os.getcwd() + imgItem)
+    upload = []
+    for k in range(16):
+        upload.append(driverOCR[k].find_element_by_class_name("fsp-drop-pane__input"))
+        upload[k].clear()
+        upload[k].send_keys(os.getcwd() + imageList[16*j + k])
+
     time.sleep(5)
-    textEl = driver.find_element_by_id("extracted_text")
-    text = textEl.text
-    print(text)
-    driver.refresh()
+
+    for l in range(16):
+
+        text = driverOCR[l].find_element_by_id("extracted_text").text
+
+        while(len(text) == 0):
+            uploadS = driverOCR[l].find_element_by_class_name("fsp-drop-pane__input")
+            uploadS.clear()
+            uploadS.send_keys(os.getcwd() + imageList[16*j + l])
+            time.sleep(5)
+
+        rentEst.append(driverOCR[l].find_element_by_id("extracted_text").text)
+
+        driverOCR[l].refresh()
+
+
+print(rentEst)
+
+
 
 
 # upload = driver.find_element_by_class_name("fsp-drop-pane__input")
