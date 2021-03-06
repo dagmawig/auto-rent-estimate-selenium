@@ -1,7 +1,7 @@
 # auto rent estimate with selenium
 
 ## Using python I automated rent estimate search on GoSection8.com website using street address
- ### The search is made for 4 differen bedroom sizes for each street address.
+ ### The search is made for 4 different bedroom sizes for each street address.
 
 ## I used selenium module to capture rent estimate chart and cropped image into smaller images to be fed to Optical Character Recognition (OCR) website
  ### Each rent estimate search gives a chart that contains rent estimate for 4 conditions (County, City, Zip and Radius)
