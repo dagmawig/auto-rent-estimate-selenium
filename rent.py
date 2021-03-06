@@ -7,7 +7,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 import time
 import pytesseract
-import cv2, xlrd 
+import cv2, xlrd
+from openpyxl import load_workbook 
 from PIL import Image, ImageOps
 from array import array
 import urllib.request as getImage
@@ -34,6 +35,33 @@ addresses = []
 
 for i in range(count):
     addresses.append( str(int(sheet.cell(i+1, 0).value)) + " " + str(sheet.cell(i+1, 1).value) + " " + str(sheet.cell(i+1, 2).value) + "," + " " + str(sheet.cell(i+1, 3).value) + "," + " " + str(sheet.cell(i+1, 4).value) + " " + str(int(sheet.cell(i+1, 5).value)) )
+
+wb = load_workbook(filename="addresses1.xlsx")
+ws = wb.worksheets[0]
+
+# ws.cell(row=55, column=2).value = "Erick"
+# ws.cell(row=1, column=8).value = "1 Bed (City)"
+# ws.cell(row=1, column=9).value = "1 Bed (ZIP)"
+# ws.cell(row=1, column=10).value = "1 Bed (Radius)"
+
+# ws.cell(row=1, column=11).value = "2 Beds (County)"
+# ws.cell(row=1, column=12).value = "2 Beds (City)"
+# ws.cell(row=1, column=13).value = "2 Beds (ZIP)"
+# ws.cell(row=1, column=14).value = "2 Beds (Radius)"
+
+# ws.cell(row=1, column=15).value = "3 Beds (County)"
+# ws.cell(row=1, column=16).value = "3 Beds (City)"
+# ws.cell(row=1, column=17).value = "3 Beds (ZIP)"
+# ws.cell(row=1, column=18).value = "3 Beds (Radius)"
+
+# ws.cell(row=1, column=19).value = "4 Beds (County)"
+# ws.cell(row=1, column=20).value = "4 Beds (City)"
+# ws.cell(row=1, column=21).value = "4 Beds (ZIP)"
+# ws.cell(row=1, column=22).value = "4 Beds (Radius)"
+
+# wb.save(filename="addresses1.xlsx")
+
+# print(wb.worksheets)
 
 # selenium
 
@@ -118,11 +146,12 @@ for driverSingle in driverOCR:
 
 print(driverOCR)
 
-rentEst = []
+
 
 for j in range(count):
     time.sleep(5)
     upload = []
+    rentEst = []
     for k in range(16):
         upload.append(driverOCR[k].find_element_by_class_name("fsp-drop-pane__input"))
         upload[k].clear()
@@ -135,15 +164,26 @@ for j in range(count):
         text = driverOCR[l].find_element_by_id("extracted_text").text
 
         while(len(text) == 0):
+            print(l)
+            driverOCR[l].get("https://brandfolder.com/workbench/extract-text-from-image")
+            time.sleep(2)
             uploadS = driverOCR[l].find_element_by_class_name("fsp-drop-pane__input")
             uploadS.clear()
             uploadS.send_keys(os.getcwd() + imageList[16*j + l])
             time.sleep(5)
+            text = driverOCR[l].find_element_by_id("extracted_text").text
 
-        rentEst.append(driverOCR[l].find_element_by_id("extracted_text").text)
+        rentEst.append(text)
 
         driverOCR[l].refresh()
 
+    wb = load_workbook(filename="addresses1.xlsx")
+    ws = wb.worksheets[0]
+
+    for index, estimate in enumerate(rentEst):
+        ws.cell(row=j+2, column=index+7).value = estimate
+
+    wb.save(filename="addresses1.xlsx")
 
 print(rentEst)
 
